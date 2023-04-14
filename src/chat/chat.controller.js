@@ -57,6 +57,23 @@ const getChatLists = async (req, res, next) => {
     }
 };
 
+const getMessageHistory = async(req, res, next) => {
+    try {
+        const { employer_id, candidate_id } = req.body;
+        const getMessageHistory = await chatService.getMessageHistory(employer_id, candidate_id);
+        return successHandler(
+            {
+                data: getMessageHistory
+            },
+            req,
+            res,
+            next
+        )
+    } catch (err) {
+        next(err);
+    }
+};
+
 const getEmployerChatLists = async (req, res, next) => {
     try {
         const { employer_id } = req.params;
@@ -95,6 +112,7 @@ module.exports = {
     getEmployerDetails,
     saveSocketChats,
     getChatLists,
+    getMessageHistory,
     getEmployerChatLists,
     getCandidateDetails
 };

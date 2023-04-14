@@ -10,13 +10,13 @@ const getEmployerDetails = async (employer_id) => {
 
 const saveSocketChats = async (sender_id, reciever_id, candidate_id, employer_id, message, time) => {
     const id = uuid();
+    const msg_id = uuid();
     const params = [candidate_id, employer_id];
     const query = `SELECT * FROM chats_mapping WHERE chat_candidate_id=? AND chat_employer_id=?`;
     const [rows] = await mysqlManager.execute(query, params);
-    console.log('rows::', rows);
 
-    if (!rows) {
-        const args = [candidate_id, employer_id, id, time];
+    if (Object.keys(rows).length === 0) {
+        const args = [candidate_id, employer_id, msg_id, time];
         const sql = `INSERT INTO chats_mapping(chat_candidate_id, chat_employer_id, chat_message_id, time) VALUES(?,?,?,?)`;
         const exec = await mysqlManager.execute(sql, args);
 
@@ -24,9 +24,9 @@ const saveSocketChats = async (sender_id, reciever_id, candidate_id, employer_id
         const sql2 = `INSERT INTO chats(_id, message_content, sendBy, recievedBy, time) VALUES(?,?,?,?,?)`;
         const exec2 = await mysqlManager.execute(sql2, args2);
 
-        const msg_id = uuid();
+        
         const args3 = [msg_id, id];
-        const sql3 = `INSERT INTO message(message_id, message_content) VALUES(?,${JSON_ARRAY(id)}?)`;
+        const sql3 = `INSERT INTO message(message_id, message_content) VALUES(?,JSON_ARRAY(?))`;
         const exec3 = await mysqlManager.execute(sql3, args3);
 
         return {
@@ -35,23 +35,30 @@ const saveSocketChats = async (sender_id, reciever_id, candidate_id, employer_id
             exec3
         }
     }
-    // const id = uuid();
-    // const msg = {
-    //     "message": `${message}`,
-    //     "sendBy": `${sender_id}`,
-    //     "recievedBy": `${reciever_id}`,
-    //     "time": `${Date.now()}`
-    // };
+    else {
+        const msgId = rows[0].chat_message_id;
 
-    // const params = [id, msg];
-    // const query = `INSERT INTO message(message_id, message) VALUES(?,?)`;
-    // const [rows] = await mysqlManager.execute(query, params);
-    // return rows;
+        const chatId = uuid();
+        const params2 = [chatId, message, sender_id, reciever_id, time];
+        const query2 = `INSERT INTO chats(_id, message_content, sendBy, recievedBy, time) VALUES(?,?,?,?,?)`;
+        const [result2] = await mysqlManager.execute(query2, params2);
 
-//     const args = [candidate_id, employer_id, id];
-//     const sql = `INSERT INTO chats_mapping(chat_candidate_id, chat_employer_id, chat_message_id) VALUES(?,?,?)`;
-//     const [result] = await mysqlManager.execute(sql, args);
-//     return {rows, result};
+        const params3 = [msgId];
+        const query3 = `SELECT * FROM message WHERE message_id=?`;
+        const [result3] = await mysqlManager.execute(query3, params3);
+
+        const data = JSON.parse(result3[0].message_content);
+        data.push(chatId);
+        const final_data = JSON.stringify(data);
+        const params4 = [final_data, msgId];
+        const patch = `UPDATE message SET message_content=JSON_ARRAY(?) WHERE message_id=?`;
+        const [result4] = await mysqlManager.execute(patch, params4);
+        return {
+            result2,
+            result3,
+            result4
+        };
+    }
 };
 
 const getChatLists = async (candidate_id) => {
@@ -104,10 +111,18 @@ const getCandidateDetails = async (candidate_id) => {
     return rows;
 };
 
+const getMessageHistory = async (employer_id, candidate_id) => {
+    const params = [employer_id, candidate_id, candidate_id, employer_id];
+    const query = `SELECT * FROM chats WHERE (sendBy=? AND recievedBy=?) || (recievedBy=? AND sendBy=?)`;
+    const [rows] = await mysqlManager.execute(query, params);
+    return rows;
+};
+
 module.exports = {
     getEmployerDetails,
     saveSocketChats,
     getChatLists,
     getEmployerChatLists,
-    getCandidateDetails
+    getCandidateDetails,
+    getMessageHistory
 };
