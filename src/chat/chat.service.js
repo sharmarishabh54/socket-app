@@ -8,7 +8,13 @@ const getEmployerDetails = async (employer_id) => {
     return rows;
 };
 
-// const saveSocketChats = async (sender_id, reciever_id, candidate_id, employer_id, message) => {
+const saveSocketChats = async (sender_id, reciever_id, candidate_id, employer_id, message) => {
+
+    const arguments = [candidate_id, employer_id];
+    const sqli = `SELECT * from chats_mapping WHERE chat_candidate_id=? AND chat_employer_id=?`;
+    const [exe] = await mysqlManager.execute(sqli, arguments);
+    return exe;
+    
 //     const id = uuid();
 //     const today = new Date();
 //     const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -22,9 +28,8 @@ const getEmployerDetails = async (employer_id) => {
 //     const args = [candidate_id, employer_id, id];
 //     const sql = `INSERT INTO chats_mapping(chat_candidate_id, chat_employer_id, chat_message_id) VALUES(?,?,?)`;
 //     const [result] = await mysqlManager.execute(sql, args);
-
-//     return rows;
-// };
+//     return {rows, result};
+};
 
 const getChatLists = async (candidate_id) => {
     const params = [candidate_id];
@@ -78,7 +83,7 @@ const getCandidateDetails = async (candidate_id) => {
 
 module.exports = {
     getEmployerDetails,
-    // saveSocketChats,
+    saveSocketChats,
     getChatLists,
     getEmployerChatLists,
     getCandidateDetails

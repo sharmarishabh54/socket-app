@@ -23,22 +23,22 @@ const getEmployerDetails = async (req, res, next) => {
     }
 };
 
-// const saveSocketChats = async (req, res, next) => {
-//     try{
-//         const { sender_id, reciever_id, candidate_id, employer_id, message } = req.body;
-//         const saveSocketChatsPayload = await chatService.saveSocketChats(sender_id, reciever_id, candidate_id, employer_id, message);
-//         return successHandler(
-//             {
-//                 data: saveSocketChatsPayload
-//             },
-//             req,
-//             res,
-//             next
-//         );
-//     }catch (err) {
-//         next(err);
-//     }
-// };
+const saveSocketChats = async (req, res, next) => {
+    try{
+        const { sender_id, reciever_id, candidate_id, employer_id, message } = req.body;
+        const saveSocketChatsPayload = await chatService.saveSocketChats(sender_id, reciever_id, candidate_id, employer_id, message);
+        return successHandler(
+            {
+                data: saveSocketChatsPayload
+            },
+            req,
+            res,
+            next
+        );
+    }catch (err) {
+        next(err);
+    }
+};
 
 const getChatLists = async (req, res, next) => {
     try {
@@ -93,7 +93,7 @@ const getCandidateDetails = async (req, res, next) => {
 
 module.exports = {
     getEmployerDetails,
-    // saveSocketChats,
+    saveSocketChats,
     getChatLists,
     getEmployerChatLists,
     getCandidateDetails
