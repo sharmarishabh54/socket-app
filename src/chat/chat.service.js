@@ -15,12 +15,14 @@ const getEmployerDetails = async (employer_id) => {
 //     const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 //     const dateTime = date+' '+time;
 
-//     const params = [sender_id, reciever_id, message, dateTime];
-//     const query = `INSERT INTO message(sender_id, reciever_id, message, createdAt) VALUES(?,?,?,?)`;
+//     const params = [id, sender_id, reciever_id, message, dateTime];
+//     const query = `INSERT INTO message(message_id, sender_id, reciever_id, message, createdAt) VALUES(?,?,?,?,?)`;
 //     const [rows] = await mysqlManager.execute(query, params);
 
-//     // const args = ;
-//     const sql = `INSERT INTO message() VALUES()`;
+//     const args = [candidate_id, employer_id, id];
+//     const sql = `INSERT INTO chats_mapping(chat_candidate_id, chat_employer_id, chat_message_id) VALUES(?,?,?)`;
+//     const [result] = await mysqlManager.execute(sql, args);
+
 //     return rows;
 // };
 
@@ -33,6 +35,7 @@ const getChatLists = async (candidate_id) => {
                     chats_mapping.chat_message_id,
                     users.id,
                     users.name,
+                    users.job_title,
                     users.user_type,
                     users.status,
                     users.experience,
