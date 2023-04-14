@@ -25,8 +25,8 @@ const getEmployerDetails = async (req, res, next) => {
 
 const saveSocketChats = async (req, res, next) => {
     try{
-        const { sender_id, reciever_id, candidate_id, employer_id, message } = req.body;
-        const saveSocketChatsPayload = await chatService.saveSocketChats(sender_id, reciever_id, candidate_id, employer_id, message);
+        const { sender_id, reciever_id, candidate_id, employer_id, message, time } = req.body;
+        const saveSocketChatsPayload = await chatService.saveSocketChats(sender_id, reciever_id, candidate_id, employer_id, message, time);
         return successHandler(
             {
                 data: saveSocketChatsPayload

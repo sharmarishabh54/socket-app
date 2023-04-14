@@ -8,22 +8,45 @@ const getEmployerDetails = async (employer_id) => {
     return rows;
 };
 
-const saveSocketChats = async (sender_id, reciever_id, candidate_id, employer_id, message) => {
+const saveSocketChats = async (sender_id, reciever_id, candidate_id, employer_id, message, time) => {
+    const id = uuid();
+    const params = [candidate_id, employer_id];
+    const query = `SELECT * FROM chats_mapping WHERE chat_candidate_id=? AND chat_employer_id=?`;
+    const [rows] = await mysqlManager.execute(query, params);
+    console.log('rows::', rows);
 
-    const arguments = [candidate_id, employer_id];
-    const sqli = `SELECT * from chats_mapping WHERE chat_candidate_id=? AND chat_employer_id=?`;
-    const [exe] = await mysqlManager.execute(sqli, arguments);
-    return exe;
-    
-//     const id = uuid();
-//     const today = new Date();
-//     const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-//     const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-//     const dateTime = date+' '+time;
+    if (!rows) {
+        const args = [candidate_id, employer_id, id, time];
+        const sql = `INSERT INTO chats_mapping(chat_candidate_id, chat_employer_id, chat_message_id, time) VALUES(?,?,?,?)`;
+        const exec = await mysqlManager.execute(sql, args);
 
-//     const params = [id, sender_id, reciever_id, message, dateTime];
-//     const query = `INSERT INTO message(message_id, sender_id, reciever_id, message, createdAt) VALUES(?,?,?,?,?)`;
-//     const [rows] = await mysqlManager.execute(query, params);
+        const args2 = [id, message, sender_id, reciever_id, time];
+        const sql2 = `INSERT INTO chats(_id, message_content, sendBy, recievedBy, time) VALUES(?,?,?,?,?)`;
+        const exec2 = await mysqlManager.execute(sql2, args2);
+
+        const msg_id = uuid();
+        const args3 = [msg_id, id];
+        const sql3 = `INSERT INTO message(message_id, message_content) VALUES(?,${JSON_ARRAY(id)}?)`;
+        const exec3 = await mysqlManager.execute(sql3, args3);
+
+        return {
+            exec,
+            exec2,
+            exec3
+        }
+    }
+    // const id = uuid();
+    // const msg = {
+    //     "message": `${message}`,
+    //     "sendBy": `${sender_id}`,
+    //     "recievedBy": `${reciever_id}`,
+    //     "time": `${Date.now()}`
+    // };
+
+    // const params = [id, msg];
+    // const query = `INSERT INTO message(message_id, message) VALUES(?,?)`;
+    // const [rows] = await mysqlManager.execute(query, params);
+    // return rows;
 
 //     const args = [candidate_id, employer_id, id];
 //     const sql = `INSERT INTO chats_mapping(chat_candidate_id, chat_employer_id, chat_message_id) VALUES(?,?,?)`;
