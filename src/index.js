@@ -1,12 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const httpServer = require("http").createServer();
-const io = require("socket.io")(httpServer, {
-    cors: {
-      origin: "http://localhost:8080",
-    },
-  });
+
+
   
   const crypto = require("crypto");
   const randomId = () => crypto.randomBytes(8).toString("hex");
@@ -21,13 +17,17 @@ const io = require("socket.io")(httpServer, {
 const apiRoutes = require("./index.routes.js");
 dotenv.config();
 const app = express();
-
+const httpServer = require("http").createServer(app);
 app.use(express.raw());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.text());
 app.use(apiRoutes);
-
+const io = require("socket.io")(httpServer, {
+  cors: {
+    origin: "http://localhost:8080",
+  },
+});
 app.use(cors());
 app.use((req, res, next) => {
     const allowedOrigins = ['http://localhost:3001'];
