@@ -59,7 +59,7 @@ const getChatLists = async (req, res, next) => {
 
 const getMessageHistory = async(req, res, next) => {
     try {
-        const { employer_id, candidate_id } = req.body;
+        const { employer_id, candidate_id } = req.params;
         const getMessageHistory = await chatService.getMessageHistory(employer_id, candidate_id);
         return successHandler(
             {
