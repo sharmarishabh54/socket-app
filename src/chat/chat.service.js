@@ -88,9 +88,7 @@ const getChatLists = async (candidate_id) => {
     rows[0].sendBy = result[0][0].sendBy;
     rows[0].recievedBy = result[0][0].recievedBy;
     rows[0].time = result[0][0].time;
-    return {
-        rows
-    }
+    return rows;
 };
 
 const getEmployerChatLists = async (employer_id) => {
