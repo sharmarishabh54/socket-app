@@ -80,7 +80,17 @@ const getChatLists = async (candidate_id) => {
                 FROM chats_mapping INNER JOIN users ON chats_mapping.chat_employer_id = users.id
                 WHERE chat_candidate_id=?`;
     const [rows] = await mysqlManager.execute(query, params);
-    return rows;
+
+    const args = [candidate_id, candidate_id];
+    const sql = `SELECT message_content, sendBy, recievedBy, time FROM chats WHERE sendBy=3 OR recievedBy=3 ORDER BY time DESC LIMIT 1`;
+    const result = await mysqlManager.execute(sql, args);
+    rows[0].message = result[0][0].message_content;
+    rows[0].sendBy = result[0][0].sendBy;
+    rows[0].recievedBy = result[0][0].recievedBy;
+    rows[0].time = result[0][0].time;
+    return {
+        rows
+    }
 };
 
 const getEmployerChatLists = async (employer_id) => {
@@ -114,8 +124,6 @@ const getCandidateDetails = async (candidate_id) => {
 const getMessageHistory = async (employer_id, candidate_id) => {
     const params = [employer_id, candidate_id, employer_id, candidate_id];
     const query = `SELECT * FROM chats WHERE ((sendBy=? AND recievedBy=?) || (recievedBy=? AND sendBy=?))`;
-    console.log('params:::', params);
-    console.log('query:::', query);
     const [rows] = await mysqlManager.execute(query, params);
     return rows;
 };
