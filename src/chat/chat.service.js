@@ -112,7 +112,7 @@ const getCandidateDetails = async (candidate_id) => {
 };
 
 const getMessageHistory = async (employer_id, candidate_id) => {
-    const params = [employer_id, candidate_id, candidate_id, employer_id];
+    const params = [employer_id, candidate_id];
     const query = `SELECT * FROM chats WHERE (sendBy=? AND recievedBy=?) || (recievedBy=? AND sendBy=?)`;
     const [rows] = await mysqlManager.execute(query, params);
     return rows;
