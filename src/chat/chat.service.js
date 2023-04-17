@@ -117,25 +117,27 @@ const getChatLists = async (candidate_id) => {
         // // }
         // // console.log(rows, response[0].message_content);
     }
-    const binder = (usr, rec, uniqeData, cid) => {
-        // console.log('usr', usr);
-        // console.log('rec', rec);
-        // console.log('uniqeData', uniqeData);
-        // console.log('cid', cid);
-        rec.forEach(element => {
-            element.
+    const binder = (rec, setData, usr) => {
+        let arrayFinal = [];
+        usr.forEach((item) => {
+            if(setData.includes(item.id)){
+                rec.forEach((e) => {
+                    if(e !== undefined){
+                        if(e.sendBy == item.id ||e.recievedBy == item.id){
+                            item['message'] = e.message_content;
+                            arrayFinal.push(item)
+                            console.log(e.message_content);
+                        }
+                    }
+                    
+                })
+            }
         });
-Object.keys().values
+        return arrayFinal;
     };
-    binder(rows, newArr, ddata, candidate_id);
-    // const args = [candidate_id, candidate_id];
-    // const sql = `SELECT message_content, sendBy, recievedBy, time FROM chats WHERE sendBy=3 OR recievedBy=3 ORDER BY time DESC LIMIT 1`;
-    // const result = await mysqlManager.execute(sql, args);
-    // rows[0].message = result[0][0].message_content;
-    // rows[0].sendBy = result[0][0].sendBy;
-    // rows[0].recievedBy = result[0][0].recievedBy;
-    // rows[0].time = result[0][0].time;
-    // return rows;
+    
+    const finalOutput = binder(newArr,ddata, rows);
+    return finalOutput;
 };
 
 const getEmployerChatLists = async (employer_id) => {
