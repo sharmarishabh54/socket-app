@@ -103,19 +103,6 @@ const getChatLists = async (candidate_id) => {
         ORDER BY time DESC LIMIT 1`;
         const [response] = await mysqlManager.execute(sql2, arg2);
         newArr.push(response[0]);
-        // for (let a = 0; a < rows.length; a++) {
-        //     for (let b = 0; b < response.length; b++) {
-        //         const t = rows[a];
-        //         rows[a].message = response[b].message_content;
-        //         console.log('t', t);
-        //         newArr.push(t);
-        //     }
-        // }
-        // // {
-        // //     rows,
-        // //     rows[0].message = response[0].message_content
-        // // }
-        // // console.log(rows, response[0].message_content);
     }
     const binder = (rec, setData, usr) => {
         let arrayFinal = [];
