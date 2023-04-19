@@ -121,6 +121,19 @@ io.use((socket, next) => {
       socket.to(to).to(socket.userID).emit("private message", message);
       messageStore.saveMessage(message);
     });
+
+    //file sharing socket
+    socket.on("upload", (file, callback) => {
+      console.log(typeof file, file);// <Buffer 25 50 44 ...>
+      //socket.emit("updateImg", file);
+      //let base64img = "data:image/jpeg;base64," + file.toString('base64');
+      io.emit('download',file);
+  
+      // save the content to the disk, for example
+      writeFile("/tmp/upload", file, (err) => {
+        callback({ message: err ? "failure" : "success" });
+      });
+    });
   
     // notify users upon disconnection
     socket.on("disconnect", async () => {
